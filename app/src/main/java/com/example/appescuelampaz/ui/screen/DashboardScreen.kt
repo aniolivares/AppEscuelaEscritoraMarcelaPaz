@@ -149,14 +149,14 @@ fun DashboardScreen() {
                         color = Color(0xFF143B35)
                     )
                     Text(
-                        text = "${estado.respuestasCorrectas} / 5",
+                        text = "${estado.respuestasCorrectas} / 15",
                         style = MaterialTheme.typography.titleMedium,
                         color = Color(0xFF71BFB5)
                     )
                 }
 
                 LinearProgressIndicator(
-                    progress = { estado.respuestasCorrectas / 5f },
+                    progress = { estado.respuestasCorrectas / 15f },
                     color = Color(0xFF71BFB5),
                     trackColor = Color(0xFFE9F5F3),
                     modifier = Modifier

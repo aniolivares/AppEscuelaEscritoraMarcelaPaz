@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.example.appescuelampaz.utils.Validaciones
 
 class DesafioViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -94,6 +95,7 @@ class DesafioViewModel(application: Application) : AndroidViewModel(application)
     fun resetearDesafio() {
         _uiState.update { estado ->
             estado.copy(
+                respuestasTexto = "",
                 desafio = estado.desafio.copy(
                     respuestasCorrectas = 0,
                     intentosRealizados = 0
@@ -113,58 +115,51 @@ class DesafioViewModel(application: Application) : AndroidViewModel(application)
         val estadoActual = _uiState.value
         val desafioActual = estadoActual.desafio
 
-        val aciertos = estadoActual.respuestasTexto.toIntOrNull()
-        val errorRespuestas = when {
-            aciertos == null -> "Ingresa la cantidad de respuestas correctas"
-            aciertos > desafioActual.totalPreguntas -> "Máximo ${desafioActual.totalPreguntas}"
-            else -> null
-        }
+        val errores = DesafioErrores(
+            nombreEstudiante = Validaciones.validarNombre(desafioActual.nombreEstudiante),
+            respuestasCorrectas = Validaciones.validarRespuestas(
+                estadoActual.respuestasTexto, desafioActual.totalPreguntas
+            ),
+            intentosExcedidos = Validaciones.validarIntentos(
+                desafioActual.intentosRealizados, desafioActual.maxIntentosPermitidos
+            ),
+            autorizacionUtp = Validaciones.validarAutorizacionUtp(desafioActual.autorizacionUtp)
+        )
 
-        val errorNombre = if (desafioActual.nombreEstudiante.isBlank()) {
-            "El nombre del estudiante es obligatorio"
-        } else null
-
-        val errorIntentos = if (desafioActual.intentosRealizados >= desafioActual.maxIntentosPermitidos) {
-            "Límite alcanzado: máximo ${desafioActual.maxIntentosPermitidos} intentos"
-        } else null
-
-        val errorUtp = if (!desafioActual.autorizacionUtp) {
-            "Debe confirmar la revisión de pauta pedagógica"
-        } else null
-
-        val hayErrores = errorNombre != null || errorIntentos != null || errorUtp != null
+        val hayErrores = errores.nombreEstudiante != null ||
+                errores.respuestasCorrectas != null ||
+                errores.intentosExcedidos != null ||
+                errores.autorizacionUtp != null
 
         if (hayErrores) {
-            _uiState.update {
-                it.copy(
-                    errores = DesafioErrores(
-                        nombreEstudiante = errorNombre,
-                        intentosExcedidos = errorIntentos,
-                        autorizacionUtp = errorUtp
-                    )
-                )
-            }
+            _uiState.update { it.copy(errores = errores) }
             return false
         }
 
+        //Sitodo es válido se calcula el resultado
+        val aciertos = estadoActual.respuestasTexto.toInt()
         val nuevosIntentos = desafioActual.intentosRealizados + 1
-        val aprobado = desafioActual.respuestasCorrectas >= 3
+        val aprobado = Validaciones.estaAprobado(aciertos, desafioActual.totalPreguntas)
         val resultadoTexto = if (aprobado) "¡Desafío Aprobado!" else "Revisa la retroalimentación e intenta de nuevo"
 
         _uiState.update { estado ->
             estado.copy(
-                desafio = desafioActual.copy(intentosRealizados = nuevosIntentos),
+                desafio = desafioActual.copy(
+                    respuestasCorrectas = aciertos,
+                    intentosRealizados = nuevosIntentos
+                ),
                 mensajeResultado = resultadoTexto,
                 esAprobado = aprobado,
                 errores = DesafioErrores()
             )
         }
 
+        //Se guarda en persistencia local (DataStore)
         viewModelScope.launch {
             repository.guardarEstadoCompleto(
                 nombre = desafioActual.nombreEstudiante,
                 asignatura = desafioActual.asignatura,
-                respuestas = desafioActual.respuestasCorrectas,
+                respuestas = aciertos,
                 intentos = nuevosIntentos,
                 mensaje = resultadoTexto,
                 aprobado = aprobado

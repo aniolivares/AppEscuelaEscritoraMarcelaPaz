@@ -155,9 +155,6 @@ fun DesafioScreen() {
                 estado.errores.respuestasCorrectas?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             },
 
-
-
-            label = { Text("Respuestas Correctas (0 a 15)") },
             leadingIcon = { Icon(Icons.Default.School, contentDescription = null) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             shape = RoundedCornerShape(16.dp),
