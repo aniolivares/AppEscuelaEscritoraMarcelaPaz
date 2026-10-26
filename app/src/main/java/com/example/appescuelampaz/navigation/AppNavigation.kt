@@ -3,7 +3,7 @@ package com.example.appescuelampaz.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,7 +32,7 @@ import com.example.appescuelampaz.ui.screen.PerfilScreen
 
 sealed class Pantalla(val ruta: String, val titulo: String, val icono: ImageVector) {
     object Perfil : Pantalla("perfil", "Perfil", Icons.Default.Person)
-    object Desafio : Pantalla("desafio", "Desafío", Icons.Default.Assignment)
+    object Desafio : Pantalla("desafio", "Desafío", Icons.AutoMirrored.Filled.Assignment)
     object Dashboard : Pantalla("dashboard", "Informe UTP", Icons.Default.Analytics)
 }
 
