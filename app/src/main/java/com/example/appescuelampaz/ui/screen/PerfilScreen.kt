@@ -144,6 +144,12 @@ fun PerfilScreen(
             onValueChange = { perfilViewModel.onNombreChange(it) },
             label = { Text("Nombre Completo") },
             leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+            isError = estado.errorNombre != null,
+            supportingText = {
+                estado.errorNombre?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            },
             shape = RoundedCornerShape(16.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF71BFB5),
@@ -261,7 +267,11 @@ fun PerfilScreen(
         }
 
         Button(
-            onClick = onNavegarADesafio,
+            onClick = {
+                if (perfilViewModel.validarParaContinuar()) {
+                    onNavegarADesafio()
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {

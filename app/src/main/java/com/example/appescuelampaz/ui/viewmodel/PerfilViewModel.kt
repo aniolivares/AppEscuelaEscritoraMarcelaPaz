@@ -10,9 +10,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.example.appescuelampaz.utils.Validaciones
 
 data class PerfilUiState(
     val nombreEstudiante: String = "",
+    val errorNombre: String? = null,
     val fotoUri: Uri? = null,
     val esDocente: Boolean = false,
     val pinInput: String = "",
@@ -54,7 +56,7 @@ class PerfilViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun onNombreChange(nuevoNombre: String) {
-        _uiState.update { it.copy(nombreEstudiante = nuevoNombre) }
+        _uiState.update { it.copy(nombreEstudiante = nuevoNombre, errorNombre = null) }
         viewModelScope.launch {
             repository.guardarNombreEstudiante(nuevoNombre)
         }
@@ -67,6 +69,12 @@ class PerfilViewModel(application: Application) : AndroidViewModel(application) 
                 repository.guardarFotoUri(uri.toString())
             }
         }
+    }
+
+    fun validarParaContinuar(): Boolean {
+        val error = Validaciones.validarNombre(_uiState.value.nombreEstudiante)
+        _uiState.update { it.copy(errorNombre = error) }
+        return error == null
     }
 
     fun onPinInputChange(nuevoPin: String) {
