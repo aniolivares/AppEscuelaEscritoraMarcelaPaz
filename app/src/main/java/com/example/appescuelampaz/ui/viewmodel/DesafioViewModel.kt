@@ -6,12 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.appescuelampaz.data.DataStoreRepository
 import com.example.appescuelampaz.model.DesafioErrores
 import com.example.appescuelampaz.model.DesafioUiState
+import com.example.appescuelampaz.utils.Validaciones
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.example.appescuelampaz.utils.Validaciones
 
 class DesafioViewModel(application: Application) : AndroidViewModel(application) {
 
