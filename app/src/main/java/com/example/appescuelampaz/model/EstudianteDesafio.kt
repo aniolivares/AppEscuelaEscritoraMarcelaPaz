@@ -12,12 +12,14 @@ data class Desafio(
 
 data class DesafioErrores(
     val nombreEstudiante: String? = null,
+    val respuestasCorrectas: String? = null,
     val intentosExcedidos: String? = null,
     val autorizacionUtp: String? = null
 )
 
 data class DesafioUiState(
     val desafio: Desafio = Desafio(),
+    val respuestasTexto: String = "",
     val errores: DesafioErrores = DesafioErrores(),
     val mensajeResultado: String = "",
     val esAprobado: Boolean = false

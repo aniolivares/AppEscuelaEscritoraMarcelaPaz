@@ -145,19 +145,18 @@ fun DesafioScreen() {
         }
 
         // 3. Cantidad de Aciertos / Respuestas Correctas
+
         OutlinedTextField(
-            value = if (estado.desafio.respuestasCorrectas == 0) "" else estado.desafio.respuestasCorrectas.toString(),
-            onValueChange = { valor ->
-                if (valor.isEmpty()) {
-                    desafioViewModel.onRespuestasCorrectasChange(0)
-                } else {
-                    val aciertos = valor.toIntOrNull()
-                    if (aciertos != null) {
-                        // Cambia el 5 por el número máximo de preguntas si no son 5
-                        desafioViewModel.onRespuestasCorrectasChange(aciertos.coerceIn(0, 15))
-                    }
-                }
+            value = estado.respuestasTexto,
+            onValueChange = { desafioViewModel.onRespuestasTextoChange(it) },
+            label = { Text("Respuestas Correctas (0 a 15)") },
+            isError = estado.errores.respuestasCorrectas != null,
+            supportingText = {
+                estado.errores.respuestasCorrectas?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             },
+
+
+
             label = { Text("Respuestas Correctas (0 a 15)") },
             leadingIcon = { Icon(Icons.Default.School, contentDescription = null) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

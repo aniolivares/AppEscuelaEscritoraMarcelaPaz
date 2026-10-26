@@ -71,9 +71,14 @@ class DesafioViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun onRespuestasCorrectasChange(aciertos: Int) {
-        _uiState.update { estado ->
-            estado.copy(desafio = estado.desafio.copy(respuestasCorrectas = aciertos))
+    fun onRespuestasTextoChange(texto: String) {
+        if (texto.all { it.isDigit() } && texto.length <= 2) {
+            _uiState.update {
+                it.copy(
+                    respuestasTexto = texto,
+                    errores = it.errores.copy(respuestasCorrectas = null)
+                )
+            }
         }
     }
 
@@ -107,6 +112,13 @@ class DesafioViewModel(application: Application) : AndroidViewModel(application)
     fun procesarIntento(): Boolean {
         val estadoActual = _uiState.value
         val desafioActual = estadoActual.desafio
+
+        val aciertos = estadoActual.respuestasTexto.toIntOrNull()
+        val errorRespuestas = when {
+            aciertos == null -> "Ingresa la cantidad de respuestas correctas"
+            aciertos > desafioActual.totalPreguntas -> "Máximo ${desafioActual.totalPreguntas}"
+            else -> null
+        }
 
         val errorNombre = if (desafioActual.nombreEstudiante.isBlank()) {
             "El nombre del estudiante es obligatorio"

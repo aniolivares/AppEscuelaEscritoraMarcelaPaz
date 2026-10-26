@@ -75,12 +75,16 @@ fun AppNavigation() {
                         selected = rutaActual == pantalla.ruta,
                         onClick = {
                             if (rutaActual != pantalla.ruta) {
-                                navController.navigate(pantalla.ruta) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
+                                if (pantalla == Pantalla.Perfil) {
+                                    navController.popBackStack(Pantalla.Perfil.ruta, inclusive = false)
+                                } else {
+                                    navController.navigate(pantalla.ruta) {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
                                 }
                             }
                         }
